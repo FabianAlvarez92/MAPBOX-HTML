@@ -1,69 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Mapa Mapbox</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet" />
-    <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 40px; bottom: 0; width: 100%; }
-        #btn {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            z-index: 1;
-            padding: 10px 15px;
-            background: #0c72ef;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <title>HERE Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+  <link rel="stylesheet" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    #mapContainer { width: 100%; height: 100%; }
+  </style>
 </head>
 <body>
-    <button id="btn" onclick="centrarUsuario()">📍 Mi Ubicación</button>
-    <div id="map"></div>
+  <div id="mapContainer"></div>
+  <script>
+    // Reemplaza esto con tu propia API Key
+    const platform = new H.service.Platform({
+      apikey: "tqk-zr4mZhDJwBxLJUnmuLgjCcwPF9yL4HVjZmyVgyI"
+    });
 
-    <script>
-        // Token público de Mapbox
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZmFiaWFuYWx2YXJlejkyIiwiYSI6ImNtOTh5d2g4OTA4OXQycnE3Y2ZzamRiNGQifQ.89wshHZiPB7QhwllfgSkLw';
+    const defaultLayers = platform.createDefaultLayers();
 
-        // Crear mapa
-        var map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-74.5, 40],
-            zoom: 9
-        });
+    const map = new H.Map(
+      document.getElementById("mapContainer"),
+      defaultLayers.vector.normal.map,
+      {
+        center: { lat: 19.4326, lng: -99.1332 },
+        zoom: 14,
+        pixelRatio: window.devicePixelRatio || 1
+      }
+    );
 
-        // Marcador inicial con popup
-        new mapboxgl.Marker()
-            .setLngLat([-74.5, 40])
-            .setPopup(new mapboxgl.Popup().setHTML("<h3>Ubicación inicial</h3><p>Este es un marcador.</p>"))
-            .addTo(map);
-
-        // Función para centrar en la ubicación del usuario
-        function centrarUsuario() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    map.setCenter([lng, lat]);
-                    new mapboxgl.Marker()
-                        .setLngLat([lng, lat])
-                        .setPopup(new mapboxgl.Popup().setHTML("<h3>Estás aquí</h3>"))
-                        .addTo(map);
-                }, function(error) {
-                    alert("No se pudo obtener tu ubicación.");
-                });
-            } else {
-                alert("La geolocalización no está disponible en este dispositivo.");
-            }
-        }
-    </script>
+    // Eventos de movimiento
+    const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+    const ui = H.ui.UI.createDefault(map, defaultLayers);
+  </script>
 </body>
 </html>
